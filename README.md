@@ -1,4 +1,4 @@
-# GrayScaleStimuli
+# GrayScaleStimuli.jl
 
 [![Build Status](https://travis-ci.org/sekunder/GrayScaleStimuli.jl.svg?branch=master)](https://travis-ci.org/sekunder/GrayScaleStimuli.jl)
 
@@ -12,7 +12,7 @@ Types and functions for dealing with grayscale stimulus images (i.e. flickering 
 
 Installation via `Pkg.clone`:
 
-`julia> Pkg.clone("https://github.com/sekunder/GrayScaleStimuli.git")`
+`julia> Pkg.clone("https://github.com/sekunder/GrayScaleStimuli.jl.git")`
 
 `julia> using GrayScaleStimuli`
 
