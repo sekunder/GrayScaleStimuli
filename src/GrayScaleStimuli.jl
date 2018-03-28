@@ -82,6 +82,7 @@ end
 include("GrayScaleStimulus.jl")
 include("optimizers.jl")
 include("STRF_response.jl")
+include("animation.jl")
 # include("CRCNS/CRCNS_Stimulus.jl")
 # include("animation.jl")
 # include("Ganmor/Ganmor_stimulus.jl")
