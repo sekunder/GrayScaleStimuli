@@ -33,7 +33,7 @@ function animated_gif(stimulus...; filename="default.gif", verbose=0,
     fname_root = remove_extension(basename(filename))
     temp_dir = joinpath(floc, fname_root, "temp")
     gif_filename = joinpath(floc, fname_root * ".gif")
-    intermediate_extension = ".tif" # since apparently pyplot can't write GIFs
+    intermediate_extension = pop!(dkwargs, :temp_ext, ".png") # since apparently pyplot can't write GIFs
 
     method=pop!(dkwargs, :method, "ImageMagick")
 
