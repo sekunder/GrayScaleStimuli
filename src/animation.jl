@@ -136,7 +136,10 @@ function animated_gif(stimulus...; filename="default.gif", verbose=0,
             A = Array{eltype(frame1)}(size(frame1)...,length(frame_range))
             A[:,:,1] = frame1
             for fn in 2:length(frame_range)
-                A[:,:,fn] = load(joinpath(temp_dir, "$fname_root-" * @sprintf("%04d",frame_idx) * intermediate_extension))
+                A[:,:,fn] = load(joinpath(temp_dir, "$fname_root-" * @sprintf("%04d",fn) * intermediate_extension))
+                if verbose > 0
+                    print(".")
+                end
             end
             if verbose > 0
                 println("]")
