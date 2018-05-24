@@ -106,7 +106,7 @@ matrix_form(::Type{F}, S::GrayScaleStimulus, frames=1:size(S.pixel_vals,2)) wher
 
 _pixel_values_to_float(v, negative) = _pixel_values_to_float(Float64, v, negative)
 _pixel_values_to_float(::Type{F}, v::BitArray, negative::Bool) where F<:AbstractFloat = negative ? F(-1.0) .^ (.!v) : Matrix{F}(v)
-_pixel_values_to_float(::Type{F}, v::Array{U}, negative::Bool) where F<:AbstractFloat, U<: Unsigned = _pixel_values_to_float(F, F.(v/typemax(U)), negative)
+_pixel_values_to_float(::Type{F}, v::Array{U}, negative::Bool) where {F<:AbstractFloat, U<: Unsigned} = _pixel_values_to_float(F, F.(v/typemax(U)), negative)
 _pixel_values_to_float(::Type{F}, v, negative::Bool) where F<:AbstractFloat = negative ? F(2.0) * F.(v) .- F(1.0) : Matrix{F}(v)
 
 """
