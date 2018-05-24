@@ -24,6 +24,24 @@ abstract type AbstractStimulus end
 #### Miscellaneous functions and constants
 ################################################################################
 
+_NI(m) = error("Not Implemented: $m")
+
+"""
+    frame_size(S)
+
+The size of the image, in pixels. Returns a tuple `(w,h)`; each frame of the image is
+displayed on screen as an image that many pixels in size.
+"""
+frame_size(S::AbstractStimulus) = _NI("frame_size($(typeof(S)))")
+
+
+"""
+    frame_time(S)
+
+The duration of a single frame, in seconds
+"""
+frame_time(S::AbstractStimulus) = _NI("frame_time($(typeof(S)))")
+
 """
     frame_rate(S::AbstractStimulus)
 
@@ -33,7 +51,30 @@ Convenience method returns `1/frame_time(S)`. Each concrete subtype of
 frame_rate(S::AbstractStimulus) = 1.0 / frame_time(S)
 
 """
-    compute_STRFs(spike_hist, stim; kwargs...)
+    n_frames(S)
+
+The number of frames
+"""
+n_frames(S::AbstractStimulus) = _NI("n_frames($(typeof(S)))")
+
+"""
+    resolution(S::AbstractStimulus)
+
+The resolution of the individual frames
+"""
+resolution(S::AbstractStimulus) = _NI("resolution($(typeof(S)))")
+
+"""
+    matrix_form([Float64], S::AbstractStimulus, frames=1:n_frames(S))
+
+A minimal representation of `S` as a `Matrix` of the specified type. The `i,j`th entry is the `i`th pixel of the `j`th frame.
+"""
+matrix_form(::Type{T}, S::AbstractStimulus, frames=1:n_frames(S)) where T = _NI("matrix_form($T, $(tpyoef(S)), $frames)")
+matrix_form(S::AbstractStimulus, frames=1:n_frames(S)) = matrix_form(Float64, S, frames)
+
+
+"""
+    _compute_STRFs(spike_hist, stim; kwargs...)
 
 Generic implementation of STRF computation. Uses `matrix_form(stim)` to perform
 computations. Returns a matrix.
