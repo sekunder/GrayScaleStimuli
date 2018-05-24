@@ -1,6 +1,6 @@
 
 """
-    GrayScaleStimulus(pixel_vals, N, px, d, mm_per_px, frame_length_s, frame_rate, onset, zerotonegative, metadata)
+    GrayScaleStimulus(pixel_vals, N, px, d, frame_length_s, onset, zerotonegative, metadata)
 
 Object that represents a stimulus that is displayed on screen to the retina.
 Values in `pixel_vals` should be `Float`s (32 or 64) between 0 and 1, inclusive, or `UInt8`s between 0 and 255, inclusive; `pixel_vals` must be a
@@ -16,45 +16,63 @@ appropriate.
 `zerotonegative` is a `Bool` that indicates if the pixel value range should be
 stretched to [-1,1] when performing computations.
 
+Abstractly, a `GrayScaleStimulus` is a function ``f(x,t)`` which returns the luminosity at
+position ``x`` at time ``t``. As such, there is a field `onset` which represents the lower
+bound on temporal support of ``f``, i.e. ``f`` is defined for ``t ∈
+[onset,onset+frame_length_s * N_frames]``.
+
 """
-type GrayScaleStimulus{T<:AbstractArray} <: AbstractStimulus
+mutable struct GrayScaleStimulus{T<:Real} <: AbstractStimulus
     # the actual values for the screen
-    pixel_vals::T
+    pixel_vals::Matrix{T} #MAJOR CHANGE - used to be type T
     # the dimensions on screen
     N::Vector{Int} # resolution of the image (number of distinct patches)
     px::Vector{Int} # the number of pixels in the full image
     d::Vector{Int} # size of each patch
-    mm_per_px::Float64
+    # mm_per_px::Float64 # Move to metadata
     # timing. frame_rate = 1/frame_length_s
-    frame_length_s::Float64
-    frame_rate::Float64
+    frame_length_s::Float64 # the duration of a single frame
+    # frame_rate::Float64 # no need for both of these??
     onset::Float64
     # metadata
-    zerotonegative::Bool # whether a 0 in pixel_values should be changed to -1
+    zerotonegative::Bool # whether a 0 in pixel_values should be changed to -1 for performing computations
     metadata::Dict
 end
 
 """
-    GrayScaleStimulus(pixel_values, existing_GrayScaleStimulus; kwargs...)
+    GrayScaleStimulus(pixel_values, existing; meta_keys=[], kwargs...)
 
-Copies the measurements from `existing_GrayScaleStimulus` into a new `GrayScaleStimulus`
-object, using the new pixel values. Overwrites old metadata with kwargs.
+Copies the measurements from `existing` into a new `GrayScaleStimulus` object, using the new
+pixel values. Overwrites old metadata with kwargs, then copies values from `existing`'s
+metadata as specified by `meta_keys`.
+
 """
-function GrayScaleStimulus(values::Union{BitMatrix,Matrix{Float64}}, S::GrayScaleStimulus;
-    onset=S.onset, zerotonegative=S.zerotonegative, kwargs...)
+function GrayScaleStimulus(values, S::GrayScaleStimulus;
+    onset=S.onset, zerotonegative=S.zerotonegative,
+    meta_keys=[], kwargs...)
 
-    return GrayScaleStimulus(values, S.N, S.px, S.d, S.mm_per_px, S.frame_length_s, S.frame_rate, onset, zerotonegative, Dict(kwargs))
+    dkwargs = Dict(kwargs)
+    for k in meta_keys
+        dkwargs[k] = metadata(S, k)
+    end
+
+    return GrayScaleStimulus(values, S.N, S.px, S.d, S.frame_length_s, onset, zerotonegative, Dict(kwargs))
 end
 
 function show(io::IO, S::GrayScaleStimulus)
     println(io, "Grayscale stimulus")
     println(io, "Duration: $(frame_time(S) * n_frames(S)) s ($(n_frames(S)) frames)")
-    println(io, "Frame size (w,h): $(frame_size(S)) pixels, $(S.mm_per_px .* frame_size(S)) mm")
+    println(io, "Frame size (w,h): $(frame_size(S)) pixels")
     println(io, "Resolution (w,h): $(S.N)")
     println(io, "Frame rate: $(S.frame_rate) Hz ($(frame_time(S)) s/frame)")
     show_metadata(io, S)
 end
 
+"""
+    frame_size(S::GrayScaleStimulus)
+
+
+"""
 frame_size(S::GrayScaleStimulus) = S.px
 frame_time(S::GrayScaleStimulus) = S.frame_length_s
 n_frames(S::GrayScaleStimulus) = size(S.pixel_vals, 2)
@@ -84,11 +102,12 @@ index_to_time(S::GrayScaleStimulus, idx::Integer, relative_time::Bool=false) = (
 
 Returns a minimal representation of `S` for performing computations.
 """
-matrix_form(S::GrayScaleStimulus, frames=1:size(S.pixel_vals,2)) = _pixel_values_to_float(S.pixel_vals[:,frames], S.zerotonegative)
+matrix_form(::Type{F}, S::GrayScaleStimulus, frames=1:size(S.pixel_vals,2)) where F<:AbstractFloat = _pixel_values_to_float(F, S.pixel_vals[:,frames], S.zerotonegative)
 
-_pixel_values_to_float(v::BitArray, negative::Bool) = negative ? (-1.0) .^ (.!v) : Matrix{Float64}(v)
-_pixel_values_to_float(v::Array{UInt8}, negative::Bool) = _pixel_values_to_float(v / 255.0, negative)
-_pixel_values_to_float(v, negative::Bool) = negative ? 2.0 * v .- 1.0 : Matrix{Float64}(v)
+_pixel_values_to_float(v, negative) = _pixel_values_to_float(Float64, v, negative)
+_pixel_values_to_float(::Type{F}, v::BitArray, negative::Bool) where F<:AbstractFloat = negative ? F(-1.0) .^ (.!v) : Matrix{F}(v)
+_pixel_values_to_float(::Type{F}, v::Array{U}, negative::Bool) where F<:AbstractFloat, U<: Unsigned = _pixel_values_to_float(F, F.(v/typemax(U)), negative)
+_pixel_values_to_float(::Type{F}, v, negative::Bool) where F<:AbstractFloat = negative ? F(2.0) * F.(v) .- F(1.0) : Matrix{F}(v)
 
 """
     frame_image(S, indexes)
@@ -133,5 +152,5 @@ function compute_STRFs(spike_hist::Matrix{Float64}, S::GrayScaleStimulus; kwargs
     dkwargs = Dict{Any,Any}(kwargs)
     window_length_s = pop!(dkwargs, :window_length_s, 0.5)
     # dkwargs[:autocomment] = "STRF computed with compute_STRFs"
-    return [GrayScaleStimulus(RFs[:,i,:], S; onset=-window_length_s, zerotonegative=false, autocomment="STRF computed with compute_STRFs", dkwargs...) for i = 1:size(RFs,2)]
+    return [GrayScaleStimulus(RFs[:,i,:], S; onset=-window_length_s, zerotonegative=false, autocomment="STRF computed with compute_STRFs", meta_keys=[:mm_per_px], dkwargs...) for i = 1:size(RFs,2)]
 end

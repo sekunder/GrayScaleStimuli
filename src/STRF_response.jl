@@ -41,7 +41,7 @@ end
 Finds parameters for the function `phi` to minimize penalty function `Q`.
 Returns the scaled output, the optimal parameters, and the value of `Q`.
 
-Mathematically, I'm thinking of `ϕ(x; θ)` as the transfer function which I'm
+Mathematically, I'm thinking of ``ϕ(x; θ)`` as the transfer function which I'm
 applying to `r`, and `Q` as the penalty function for how close `ϕ(r(t); θ)` is
 to `n(t)`.
 
@@ -52,7 +52,7 @@ Programmatically, this means:
  * `Q(L,n)` should accept two vectors and return a single number
 
 Some keyword arguments:
- * `objective=:min` whether to maximizer or minimize `Q`
+ * `objective=:min` whether to maximize or minimize `Q`
  * `d` is the dimensionality of the search space (if using brute force search)
  * `theta0` is an initial guess for the value of the parameters (if using some other algorithm)
  * `algorithm=:brute_force_search` how to search for the optimum
