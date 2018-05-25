@@ -22,9 +22,9 @@ bound on temporal support of ``f``, i.e. ``f`` is defined for ``t ∈
 [onset,onset+frame_length_s * N_frames]``.
 
 """
-mutable struct GrayScaleStimulus{T<:Real} <: AbstractStimulus
+mutable struct GrayScaleStimulus <: AbstractStimulus
     # the actual values for the screen
-    pixel_vals::Matrix{T} #MAJOR CHANGE - used to be type T
+    pixel_vals #MAJOR CHANGE - used to be type T
     # the dimensions on screen
     N::Vector{Int} # resolution of the image (number of distinct patches)
     px::Vector{Int} # the number of pixels in the full image
