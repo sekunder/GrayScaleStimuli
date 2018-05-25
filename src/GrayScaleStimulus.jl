@@ -53,7 +53,7 @@ function GrayScaleStimulus(values, S::GrayScaleStimulus;
 
     dkwargs = Dict(kwargs)
     for k in meta_keys
-        dkwargs[k] = metadata(S, k)
+        dkwargs[k] = get(S.metadata, k, :none)
     end
 
     return GrayScaleStimulus(values, S.N, S.px, S.d, S.frame_length_s, onset, zerotonegative, Dict(kwargs))
