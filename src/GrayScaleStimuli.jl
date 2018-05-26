@@ -65,6 +65,14 @@ The resolution of the individual frames
 resolution(S::AbstractStimulus) = _NI("resolution($(typeof(S)))")
 
 """
+    patch_size(S::AbstractStimulus)
+
+The size, in pixels, of the individual patches of constant value. For any stimulus `S`, we
+should have `frame_size(S) == resolution(S) .* patch_size(S)`
+"""
+patch_size(S::AbstractStimulus) = _NI("patch_size($(typeof(S)))")
+
+"""
     matrix_form([Float64], S::AbstractStimulus, frames=1:n_frames(S))
 
 A minimal representation of `S` as a `Matrix` of the specified type. The `i,j`th entry is the `i`th pixel of the `j`th frame.

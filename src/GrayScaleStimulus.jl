@@ -68,15 +68,11 @@ function show(io::IO, S::GrayScaleStimulus)
     show_metadata(io, S)
 end
 
-"""
-    frame_size(S::GrayScaleStimulus)
-
-
-"""
 frame_size(S::GrayScaleStimulus) = S.px
 frame_time(S::GrayScaleStimulus) = S.frame_length_s
 n_frames(S::GrayScaleStimulus) = size(S.pixel_vals, 2)
 resolution(S::GrayScaleStimulus) = S.N
+patch_size(S::GrayScaleStimulus) = S.d
 
 """
     time_to_index(S, t, relative_time=false)
