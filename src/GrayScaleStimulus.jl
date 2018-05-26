@@ -29,7 +29,7 @@ mutable struct GrayScaleStimulus{T} <: AbstractStimulus
     N::Vector{Int} # resolution of the image (number of distinct patches)
     px::Vector{Int} # the number of pixels in the full image
     d::Vector{Int} # size of each patch
-    # mm_per_px::Float64 # Move to metadata
+    mm_per_px::Float64 # back out of metadata
     # timing. frame_rate = 1/frame_length_s
     frame_length_s::Float64 # the duration of a single frame
     # frame_rate::Float64 # no need for both of these??
@@ -56,7 +56,7 @@ function GrayScaleStimulus(values, S::GrayScaleStimulus;
         dkwargs[k] = get(S.metadata, k, :none)
     end
 
-    return GrayScaleStimulus(values, S.N, S.px, S.d, S.frame_length_s, onset, zerotonegative, Dict(kwargs))
+    return GrayScaleStimulus(values, S.N, S.px, S.d, S.mm_per_px, S.frame_length_s, onset, zerotonegative, Dict(kwargs))
 end
 
 function show(io::IO, S::GrayScaleStimulus)
@@ -148,5 +148,5 @@ function compute_STRFs(spike_hist::Matrix{Float64}, S::GrayScaleStimulus; kwargs
     dkwargs = Dict{Any,Any}(kwargs)
     window_length_s = pop!(dkwargs, :window_length_s, 0.5)
     # dkwargs[:autocomment] = "STRF computed with compute_STRFs"
-    return [GrayScaleStimulus(RFs[:,i,:], S; onset=-window_length_s, zerotonegative=false, autocomment="STRF computed with compute_STRFs", meta_keys=[:mm_per_px], dkwargs...) for i = 1:size(RFs,2)]
+    return [GrayScaleStimulus(RFs[:,i,:], S; onset=-window_length_s, zerotonegative=false, autocomment="STRF computed with compute_STRFs", dkwargs...) for i = 1:size(RFs,2)]
 end
