@@ -51,7 +51,7 @@ function GrayScaleStimulus(values, S::GrayScaleStimulus;
     onset=S.onset, zerotonegative=S.zerotonegative,
     meta_keys=[], kwargs...)
 
-    dkwargs = Dict(kwargs)
+    dkwargs = Dict{Any,Any}(kwargs)
     for k in meta_keys
         dkwargs[k] = get(S.metadata, k, :none)
     end
