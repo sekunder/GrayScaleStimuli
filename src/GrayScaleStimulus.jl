@@ -64,7 +64,7 @@ function show(io::IO, S::GrayScaleStimulus)
     println(io, "Duration: $(frame_time(S) * n_frames(S)) s ($(n_frames(S)) frames)")
     println(io, "Frame size (w,h): $(frame_size(S)) pixels")
     println(io, "Resolution (w,h): $(S.N)")
-    println(io, "Frame rate: $(S.frame_rate) Hz ($(frame_time(S)) s/frame)")
+    println(io, "Frame rate: $(frame_rate(S)) Hz ($(frame_time(S)) s/frame)")
     show_metadata(io, S)
 end
 
