@@ -150,3 +150,37 @@ function compute_STRFs(spike_hist::Matrix{Float64}, S::GrayScaleStimulus; kwargs
     # dkwargs[:autocomment] = "STRF computed with compute_STRFs"
     return [GrayScaleStimulus(RFs[:,i,:], S; onset=-window_length_s, zerotonegative=false, autocomment="STRF computed with compute_STRFs", dkwargs...) for i = 1:size(RFs,2)]
 end
+
+"""
+    imagemean(M::Matrix)
+
+Computes the center of mass of the image.
+"""
+function imagemean(M::Matrix)
+    N = [size(M)...]
+    P = sum(M)
+    return [sum(M .* (1:N[1])) / P, sum(M' .* (1:N[2])) / P]
+end
+
+"""
+    matrixcovariance(M::Matrix)
+
+Computes the covariance matrix of the image represented by `M`
+"""
+function matrixcovariance(M::Matrix)
+    N = [size(M)...]
+    P = sum(M)
+    # m = [sum(M .* (1:N[1])) / P, sum(M' .* (1:N[2])) / P]
+    m = image_mean(M)
+    Σ = zeros(2,2)
+    for i = 1:2
+        for j = i:2
+            for x_idx in eachindex(M)
+                x = ind2sub(size(M),x_idx)
+                Σ[i,j] += (x[i] - m[i]) * (x[j] - m[j]) * M[x_idx] / P
+            end
+        end
+    end
+    Σ[2,1] = Σ[1,2]
+    return Σ
+end
