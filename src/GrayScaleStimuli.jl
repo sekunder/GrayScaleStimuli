@@ -7,7 +7,7 @@ call `compute_STRFs(raster, stimulus)` regardless of the data source.
 """
 module GrayScaleStimuli
 
-import Base.show
+import Base: show, isequal, hash
 include("metadata.jl")
 
 ################################################################################
@@ -132,13 +132,15 @@ include("GrayScaleStimulus.jl")
 include("optimizers.jl")
 include("STRF_response.jl")
 include("animation.jl")
+include("fileio.jl")
 # include("CRCNS/CRCNS_Stimulus.jl")
 # include("animation.jl")
 # include("Ganmor/Ganmor_stimulus.jl")
 
-export show, frame_size, frame_time, frame_rate, n_frames, matrix_form, frame_image,
+export show, isequal, hash,
+       frame_size, frame_time, frame_rate, n_frames, matrix_form, frame_image,
        time_to_index, index_to_time,
-       GrayScaleStimulus, CRCNS_Stimulus, Ganmor_Stimulus,
+       GrayScaleStimulus, #CRCNS_Stimulus, Ganmor_Stimulus,
        compute_STRFs, STRF_response, scale_response,
        animated_gif
 
