@@ -7,6 +7,7 @@ call `compute_STRFs(raster, stimulus)` regardless of the data source.
 """
 module GrayScaleStimuli
 
+using JLD
 import Base: show, isequal, hash
 include("metadata.jl")
 
