@@ -139,7 +139,7 @@ include("fileio.jl")
 # include("Ganmor/Ganmor_stimulus.jl")
 
 export show, isequal, hash, savestimulus, loadstimulus,
-       frame_size, frame_time, frame_rate, n_frames, matrix_form, frame_image,
+       frame_size, frame_time, frame_rate, n_frames, resolution, patch_size, matrix_form, frame_image,
        time_to_index, index_to_time,
        GrayScaleStimulus, #CRCNS_Stimulus, Ganmor_Stimulus,
        compute_STRFs, STRF_response, scale_response,
