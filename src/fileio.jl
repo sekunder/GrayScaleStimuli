@@ -19,10 +19,11 @@ end
 #### File IO
 ################################################################################
 """
-    savestimulus(S::AbstractStimulus; [filename], [dir])
+    savestimulus(S::AbstractStimulus; [filename], [dir], [old])
 
-Save the given stimulus to disk using the `JLD` package. Returns the full path to the
-saved file.
+Save the given stimulus to disk using the `JLD` package. Returns the full path to the saved
+file. Deletes file `old` if it exists in `dir`. By default `old` is `nothing` to avoid
+unnecessarily deleting and rewriting files.
 
 Default `filename` is `string(hash(S))`. Default `dir` is `Pkg.dir(GrayScaleStimuli)/saved`.
 
@@ -30,11 +31,18 @@ If `dir` doesn't exist, will use `mkpath`. If file exists, contents will be over
 """
 function savestimulus(S::AbstractStimulus;
     filename=string(hash(S)),
-    dir=joinpath(Pkg.dir("GrayScaleStimuli"), "saved"))
+    dir=joinpath(Pkg.dir("GrayScaleStimuli"), "saved"),
+    old=nothing)
 
     # _dir = abspath(dir)
     if !ispath(dir)
         mkpath(dir)
+    end
+    if old != nothing
+        _old = endswith(old, ".jld") ? old : old * ".jld"
+        if isfile(joinpath(dir, _old))
+            rm(joinpath(dir, _old))
+        end
     end
     _fn = endswith(filename, ".jld") ? filename : filename * ".jld"
     # save(joinpath(_dir, _fn), "S", S)
@@ -47,7 +55,7 @@ end
 
 """
     loadstimulus(filename; [dir])
-    loadstimulus(h; [dir])
+    loadstimulus(h::UInt; [dir])
 
 Returns the stimulus saved in `filename` (or identified by hash `h`) as saved by
 `savestimulus`. Default `dir` is `Pkg.dir(GrayScaleStimuli)/saved`
