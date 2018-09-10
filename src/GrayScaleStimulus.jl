@@ -171,7 +171,7 @@ function matrixcovariance(M::Matrix)
     N = [size(M)...]
     P = sum(M)
     # m = [sum(M .* (1:N[1])) / P, sum(M' .* (1:N[2])) / P]
-    m = image_mean(M)
+    m = imagemean(M)
     Σ = zeros(2,2)
     for i = 1:2
         for j = i:2

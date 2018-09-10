@@ -143,6 +143,7 @@ export show, isequal, hash, savestimulus, loadstimulus,
        time_to_index, index_to_time,
        GrayScaleStimulus, #CRCNS_Stimulus, Ganmor_Stimulus,
        compute_STRFs, STRF_response, scale_response,
+       imagemean, matrixcovariance,
        animated_gif
 
 end
